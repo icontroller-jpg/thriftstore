@@ -16,7 +16,7 @@ export default function Home() {
     setProducts(data);
   };
 
-  const filters = ["All", "Women", "Men", "Accessories"];
+  const filters = ["All", "Women", "Men"];
 
   return (
     <>
