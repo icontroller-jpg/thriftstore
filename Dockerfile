@@ -15,4 +15,4 @@ COPY ThriftStore/backend/ ./backend
 EXPOSE 8000
 
 # Command to run the app (update path to manage.py)
-CMD ["python", "backend/manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["gunicorn", "backend.manage:application", "--bind", "0.0.0.0:8000"]
