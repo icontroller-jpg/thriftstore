@@ -1,6 +1,6 @@
 function ProductCard({ product }) {
   const buy = () => {
-    const phone = "919999999999";
+    const phone = "+263788448120";
     const msg = `Hello, I would like to enquire about ${product.title} — $${product.price}`;
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
     window.open(url);
