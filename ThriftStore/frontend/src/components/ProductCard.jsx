@@ -1,7 +1,7 @@
 function ProductCard({ product }) {
   const buy = () => {
     const phone = "+263788448120";
-    const msg = `Hello, I would like to enquire about ${product.title} — $${product.price}`;
+    const msg = `Hello, I would like to enquire about *${product.title}* — $${product.price}\n\nProduct Image: ${product.image}`;
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
     window.open(url);
   };
@@ -18,7 +18,6 @@ function ProductCard({ product }) {
           -webkit-tap-highlight-color: transparent;
         }
 
-        /* ── Image ── */
         .pc-img-wrap {
           position: relative;
           width: 100%;
@@ -41,7 +40,6 @@ function ProductCard({ product }) {
           .pc:hover .pc-img-wrap img { transform: scale(1.04); }
         }
 
-        /* Sold overlay */
         .pc-sold-overlay {
           position: absolute;
           inset: 0;
@@ -60,7 +58,6 @@ function ProductCard({ product }) {
           padding: 6px 14px;
         }
 
-        /* ── Info ── */
         .pc-info {
           padding: 12px 14px 0;
           flex: 1;
@@ -90,7 +87,6 @@ function ProductCard({ product }) {
 
         .pc-spacer { flex: 1; min-height: 10px; }
 
-        /* ── WhatsApp button ── */
         .pc-btn {
           display: flex;
           align-items: center;
@@ -138,7 +134,6 @@ function ProductCard({ product }) {
 
         .pc-wa-icon { width: 10px; height: 10px; flex-shrink: 0; }
 
-        /* ── Mobile ≤600px ── */
         @media (max-width: 600px) {
           .pc-info  { padding: 10px 10px 0; }
           .pc-title { font-size: 12px; }
@@ -152,7 +147,6 @@ function ProductCard({ product }) {
           .pc-wa-icon { width: 9px; height: 9px; }
         }
 
-        /* ── iPhone SE ≤375px ── */
         @media (max-width: 375px) {
           .pc-title { font-size: 11px; }
           .pc-btn   { font-size: 7.5px; letter-spacing: 0.14em; }
