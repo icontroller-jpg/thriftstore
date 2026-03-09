@@ -32,8 +32,17 @@ export default function Home() {
           --warm:   #b5a48a;
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
+        *, *::before, *::after {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+
+        html {
+          scroll-behavior: smooth;
+          -webkit-text-size-adjust: 100%;
+          text-size-adjust: 100%;
+        }
 
         body {
           background: var(--ivory);
@@ -42,7 +51,7 @@ export default function Home() {
           overflow-x: hidden;
         }
 
-        /* ─── NAV ─── */
+        /* ── NAV ── */
         .nav {
           position: sticky;
           top: 0;
@@ -93,6 +102,7 @@ export default function Home() {
           text-decoration: none;
           transition: color 0.2s;
           white-space: nowrap;
+          -webkit-tap-highlight-color: transparent;
         }
         .nav-link:hover { color: var(--ink); }
 
@@ -103,10 +113,13 @@ export default function Home() {
           justify-content: center;
           gap: 5px;
           cursor: pointer;
-          padding: 6px 0;
+          width: 44px;
+          height: 44px;
+          align-items: center;
           background: none;
           border: none;
           flex-shrink: 0;
+          -webkit-tap-highlight-color: transparent;
         }
         .nav-hamburger span {
           display: block;
@@ -124,13 +137,14 @@ export default function Home() {
           display: none;
           position: fixed;
           top: 52px;
-          left: 0; right: 0;
+          left: 0;
+          right: 0;
           background: var(--ivory);
           border-bottom: 1px solid var(--ink-10);
           z-index: 99;
           flex-direction: column;
-          padding: 28px;
-          gap: 22px;
+          padding: 20px 24px;
+          gap: 0;
           opacity: 0;
           transform: translateY(-8px);
           transition: opacity 0.25s, transform 0.25s;
@@ -148,12 +162,15 @@ export default function Home() {
           text-transform: uppercase;
           color: var(--ink-50);
           text-decoration: none;
-          transition: color 0.2s;
+          padding: 14px 0;
+          display: block;
+          -webkit-tap-highlight-color: transparent;
+          border-bottom: 1px solid var(--ink-10);
         }
-        .mobile-menu-link:hover { color: var(--ink); }
-        .mobile-menu-divider { height: 1px; background: var(--ink-10); }
+        .mobile-menu-link:last-of-type { border-bottom: none; }
+        .mobile-menu-link:active { color: var(--ink); }
 
-        /* ─── MARQUEE ─── */
+        /* ── MARQUEE ── */
         .marquee-strip {
           border-bottom: 1px solid var(--ink-10);
           overflow: hidden;
@@ -174,7 +191,7 @@ export default function Home() {
           letter-spacing: 0.3em;
           text-transform: uppercase;
           color: var(--ink-50);
-          padding: 0 32px;
+          padding: 0 28px;
         }
         .marquee-dot { color: var(--warm); padding: 0 2px; }
 
@@ -183,7 +200,7 @@ export default function Home() {
           to   { transform: translateX(-50%); }
         }
 
-        /* ─── HERO ─── */
+        /* ── HERO ── */
         .hero {
           display: grid;
           grid-template-columns: 1fr 2fr 1fr;
@@ -207,17 +224,19 @@ export default function Home() {
 
         .hero-center { text-align: center; }
 
+        /* FIX: explicit color so it never goes invisible */
         .hero-title {
           font-family: 'IM Fell English', serif;
           font-weight: 400;
           font-size: clamp(52px, 7.5vw, 112px);
           line-height: 0.9;
           letter-spacing: -0.01em;
-          color: var(--ink);
+          color: #0e0d0b;
         }
         .hero-title-italic {
           font-style: italic;
-          color: var(--ink-50);
+          color: rgba(14,13,11,0.45);
+          display: block;
         }
 
         .hero-right { text-align: right; padding-bottom: 8px; }
@@ -232,23 +251,28 @@ export default function Home() {
           margin-left: auto;
         }
 
-        /* ─── TOOLBAR ─── */
+        /* ── TOOLBAR ── */
         .toolbar {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 18px 40px;
+          padding: 0 40px;
+          height: 48px;
           border-bottom: 1px solid var(--ink-10);
           gap: 12px;
-          flex-wrap: wrap;
           opacity: 0;
           animation: fadeIn 0.7s ease forwards 0.5s;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
         }
+        .toolbar::-webkit-scrollbar { display: none; }
+
         .toolbar-left {
           display: flex;
-          gap: 20px;
+          gap: 24px;
           align-items: center;
-          flex-wrap: wrap;
+          flex-shrink: 0;
         }
         .toolbar-tag {
           font-family: 'Didact Gothic', sans-serif;
@@ -257,11 +281,14 @@ export default function Home() {
           text-transform: uppercase;
           color: var(--ink-50);
           cursor: pointer;
-          padding: 4px 0;
+          padding: 0;
+          height: 48px;
           border: none;
           border-bottom: 1px solid transparent;
           background: none;
           transition: color 0.2s, border-color 0.2s;
+          white-space: nowrap;
+          -webkit-tap-highlight-color: transparent;
         }
         .toolbar-tag:hover,
         .toolbar-tag.active {
@@ -274,9 +301,12 @@ export default function Home() {
           font-style: italic;
           color: var(--ink-50);
           white-space: nowrap;
+          flex-shrink: 0;
+          margin-left: auto;
+          padding-left: 24px;
         }
 
-        /* ─── GRID ─── */
+        /* ── GRID ── */
         .grid-wrap {
           padding: 0 40px 100px;
           opacity: 0;
@@ -289,13 +319,12 @@ export default function Home() {
           border-left: 1px solid var(--ink-10);
           border-top: 1px solid var(--ink-10);
         }
-
         .product-grid > * {
           border-right: 1px solid var(--ink-10);
           border-bottom: 1px solid var(--ink-10);
         }
 
-        /* ─── EMPTY ─── */
+        /* ── EMPTY ── */
         .empty {
           grid-column: 1 / -1;
           display: flex;
@@ -303,7 +332,7 @@ export default function Home() {
           align-items: center;
           justify-content: center;
           gap: 16px;
-          padding: 120px 0;
+          padding: 100px 0;
           border-right: 1px solid var(--ink-10);
           border-bottom: 1px solid var(--ink-10);
         }
@@ -321,7 +350,7 @@ export default function Home() {
           color: var(--ink-20);
         }
 
-        /* ─── FOOTER ─── */
+        /* ── FOOTER ── */
         .footer {
           border-top: 1px solid var(--ink-10);
           display: grid;
@@ -356,7 +385,7 @@ export default function Home() {
           text-align: right;
         }
 
-        /* ─── ANIMATIONS ─── */
+        /* ── ANIMATIONS ── */
         @keyframes fadeIn {
           from { opacity: 0; }
           to   { opacity: 1; }
@@ -366,11 +395,9 @@ export default function Home() {
           to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* ══════════════════════════════
-           RESPONSIVE
-        ══════════════════════════════ */
-
-        /* Tablet: 601–960px */
+        /* ══════════════════
+           TABLET ≤960px
+        ══════════════════ */
         @media (max-width: 960px) {
           .nav { padding: 0 28px; }
 
@@ -383,55 +410,84 @@ export default function Home() {
           .hero-meta  { display: none; }
           .hero-right { display: none; }
 
-          .toolbar   { padding: 16px 28px; }
+          .toolbar   { padding: 0 28px; }
           .grid-wrap { padding: 0 28px 72px; }
           .product-grid { grid-template-columns: repeat(2, 1fr); }
           .footer    { padding: 24px 28px; }
         }
 
-        /* Mobile: ≤600px */
+        /* ══════════════════
+           MOBILE ≤600px
+           All iPhones
+        ══════════════════ */
         @media (max-width: 600px) {
-          .nav { padding: 0 20px; }
-          .nav-left  { display: none; }
-          .nav-right { display: none; }
+          /* Nav */
+          .nav { padding: 0 20px; height: 52px; }
+          .nav-left    { display: none; }
+          .nav-right   { display: none; }
           .nav-hamburger { display: flex; }
-          .mobile-menu   { display: flex; }
+          .nav-logo { font-size: 13px; letter-spacing: 0.2em; }
 
-          .hero { padding: 44px 20px 40px; }
-          .hero-title { font-size: clamp(48px, 13vw, 68px); }
+          .mobile-menu { display: flex; }
 
-          .marquee-item { padding: 0 18px; }
+          /* Marquee */
+          .marquee-item { padding: 0 16px; font-size: 8.5px; }
 
-          .toolbar { padding: 14px 20px; }
-          .toolbar-left { gap: 14px; }
-
-          /* Full-bleed cards on mobile */
-          .grid-wrap { padding: 0 0 64px; }
-          .product-grid {
+          /* Hero — explicit sizing, never empty */
+          .hero {
             grid-template-columns: 1fr;
-            border-left: none;
+            text-align: center;
+            padding: 36px 24px 32px;
           }
-          .product-grid > * {
+          .hero-title {
+            font-size: 48px;
+            line-height: 1;
+            color: #0e0d0b !important;
+          }
+          .hero-title-italic {
+            color: rgba(14,13,11,0.4) !important;
+          }
+
+          /* Toolbar */
+          .toolbar { padding: 0 20px; height: 48px; }
+          .toolbar-left { gap: 20px; }
+          .toolbar-tag { font-size: 9px; }
+
+          /* Grid — 2 columns, no side padding, full bleed */
+          .grid-wrap {
+            padding: 0 0 80px;
+          }
+          .product-grid {
+            grid-template-columns: repeat(2, 1fr);
             border-left: none;
             border-right: none;
           }
+          .product-grid > * {
+            border-left: none;
+          }
+          .product-grid > *:nth-child(2n) {
+            border-right: none;
+          }
 
+          /* Footer */
           .footer {
             grid-template-columns: 1fr;
             text-align: center;
-            gap: 8px;
-            padding: 24px 20px;
+            gap: 6px;
+            padding: 20px;
           }
           .footer-left  { text-align: center; }
-          .footer-right { text-align: center; }
+          .footer-right { display: none; }
         }
 
-        /* Extra small: ≤380px */
-        @media (max-width: 380px) {
-          .nav-logo     { font-size: 12px; letter-spacing: 0.18em; }
-          .hero-title   { font-size: 42px; }
-          .toolbar-left { gap: 10px; }
-          .toolbar-tag  { font-size: 8.5px; }
+        /* ══════════════════
+           iPhone SE 375px
+        ══════════════════ */
+        @media (max-width: 375px) {
+          .nav-logo   { font-size: 11px; letter-spacing: 0.16em; }
+          .hero-title { font-size: 40px !important; }
+          .toolbar-tag { font-size: 8.5px; }
+          .marquee-item { padding: 0 12px; font-size: 8px; }
         }
       `}</style>
 
@@ -442,13 +498,10 @@ export default function Home() {
           <a className="nav-link" href="#">Women</a>
           <a className="nav-link" href="#">Men</a>
         </div>
-
         <span className="nav-logo">Pridepzw</span>
-
         <div className="nav-right">
           <a className="nav-link" href="#">Search</a>
         </div>
-
         <button
           className={`nav-hamburger ${menuOpen ? "open" : ""}`}
           onClick={() => setMenuOpen(!menuOpen)}
@@ -464,7 +517,6 @@ export default function Home() {
         <a className="mobile-menu-link" href="#" onClick={() => setMenuOpen(false)}>Women</a>
         <a className="mobile-menu-link" href="#" onClick={() => setMenuOpen(false)}>Men</a>
         <a className="mobile-menu-link" href="#" onClick={() => setMenuOpen(false)}>Accessories</a>
-        <div className="mobile-menu-divider" />
         <a className="mobile-menu-link" href="#" onClick={() => setMenuOpen(false)}>Search</a>
       </div>
 
@@ -497,8 +549,8 @@ export default function Home() {
         </div>
         <div className="hero-center">
           <h1 className="hero-title">
-            The<br />
-            <span className="hero-title-italic">Thrift</span><br />
+            The
+            <span className="hero-title-italic">Thrift</span>
             Plug
           </h1>
         </div>
