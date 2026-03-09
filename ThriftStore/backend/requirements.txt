@@ -3,4 +3,6 @@ requests==2.32.0
 Django>=4.2,<5.0
 djangorestframework
 gunicorn
-django-cors-headers==4.4.0
+django-cors-headers==4.4.04
+whitenoise==6.5.0
+
