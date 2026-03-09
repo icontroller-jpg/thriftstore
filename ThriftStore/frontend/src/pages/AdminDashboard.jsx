@@ -9,7 +9,6 @@ function AdminDashboard() {
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Frontend environment variable for backend URL
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
   const CLOUDINARY_PRESET = import.meta.env.VITE_CLOUDINARY_PRESET || "thriftstore";
   const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL || "https://api.cloudinary.com/v1_1/dfapvjvza/image/upload";
@@ -21,15 +20,11 @@ function AdminDashboard() {
   };
 
   const uploadProduct = async () => {
-    if (!name || !price || !file) {
-      alert("Please fill all required fields");
-      return;
-    }
+    if (!name || !price || !file) return alert("Please fill all required fields");
 
     setLoading(true);
 
     try {
-      // 1️⃣ Upload image to Cloudinary
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", CLOUDINARY_PRESET);
@@ -37,7 +32,6 @@ function AdminDashboard() {
       const cloudinaryRes = await axios.post(CLOUDINARY_URL, formData);
       const imageUrl = cloudinaryRes.data.secure_url;
 
-      // 2️⃣ Send product data to deployed Django API
       await axios.post(`${API_URL}/api/products/`, {
         title: name,
         price: parseFloat(price),
@@ -47,15 +41,9 @@ function AdminDashboard() {
       });
 
       alert("Product uploaded successfully!");
-
-      // Reset form
-      setName("");
-      setPrice("");
-      setDescription("");
-      setFile(null);
-      setPreview(null);
-    } catch (error) {
-      console.error("Upload failed:", error);
+      setName(""); setPrice(""); setDescription(""); setFile(null); setPreview(null);
+    } catch (err) {
+      console.error(err);
       alert("Upload failed. Check console for details.");
     } finally {
       setLoading(false);
@@ -63,11 +51,12 @@ function AdminDashboard() {
   };
 
   return (
-    <div style={{ padding: "40px" }}>
-      <h1>Admin Product Upload</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+        <h1 className="text-2xl font-semibold mb-4 text-center">Upload Product</h1>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "300px" }}>
         <input
+          className="w-full p-2 mb-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           placeholder="Product Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -75,27 +64,37 @@ function AdminDashboard() {
 
         <input
           type="number"
+          className="w-full p-2 mb-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           placeholder="Price"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
 
         <textarea
+          className="w-full p-2 mb-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <input type="file" accept="image/*" onChange={handleFileChange} />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="mb-3"
+        />
 
         {preview && (
-          <div>
-            <p>Preview:</p>
-            <img src={preview} alt="preview" style={{ width: "200px", borderRadius: "10px" }} />
+          <div className="mb-3 text-center">
+            <img src={preview} alt="preview" className="w-48 mx-auto rounded-lg" />
           </div>
         )}
 
-        <button onClick={uploadProduct} disabled={loading}>
+        <button
+          onClick={uploadProduct}
+          disabled={loading}
+          className={`w-full py-2 rounded text-white font-medium ${loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"}`}
+        >
           {loading ? "Uploading..." : "Post Product"}
         </button>
       </div>
