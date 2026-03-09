@@ -12,6 +12,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+
     # third party
     "rest_framework",
     "corsheaders",
@@ -62,6 +63,11 @@ DATABASES = {
 
 ROOT_URLCONF = "thriftstore_api.urls"
 
+
+
+CORS_ALLOWED_ORIGINS = [
+    "https://thriftstore-t4od.onrender.com",
+]
 
 DEBUG = True
 
