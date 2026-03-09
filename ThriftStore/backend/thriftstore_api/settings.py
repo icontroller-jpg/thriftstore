@@ -1,5 +1,5 @@
 from pathlib import Path
-
+import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -54,12 +54,21 @@ TEMPLATES = [
 ]
 
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if DATABASE_URL:
+    import dj_database_url
+    DATABASES = {
+        "default": dj_database_url.parse(DATABASE_URL)
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+
 
 ROOT_URLCONF = "thriftstore_api.urls"
 
@@ -77,6 +86,7 @@ ALLOWED_HOSTS = ["thriftstore-backend.onrender.com",]
 
 
 CORS_ALLOW_ALL_ORIGINS = True
+
 
 
 MEDIA_URL = "/media/"
