@@ -6,6 +6,7 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState(null);
+  const navigate = useNavigate();
 
   const handleSignup = async () => {
     if (!email || !password) return;
@@ -15,7 +16,7 @@ function Signup() {
         `${import.meta.env.VITE_API_URL}/api/signup/`,
         { email, password }
       );
-      alert("Account created");
+      navigate("/#");
     } catch (err) {
       console.error(err);
       alert("Signup failed");

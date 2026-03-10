@@ -6,6 +6,8 @@ function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState(null);
+  const navigate = useNavigate();
+
 
   const handleLogin = async () => {
     if (!email || !password) return;
@@ -16,7 +18,7 @@ function Login() {
         { email, password }
       );
       localStorage.setItem("token", res.data.token);
-      alert("Login successful");
+      navigate("/");
     } catch (err) {
       console.error(err);
       alert("Login failed");
