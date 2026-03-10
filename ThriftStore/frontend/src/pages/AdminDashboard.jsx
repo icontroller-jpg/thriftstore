@@ -49,7 +49,12 @@ function AdminDashboard() {
       formData.append("file", file);
       formData.append("upload_preset", CLOUDINARY_PRESET);
       const cloudinaryRes = await axios.post(CLOUDINARY_URL, formData);
-      const imageUrl = cloudinaryRes.data.secure_url;
+      const rawUrl = cloudinaryRes.data.secure_url;
+
+        const imageUrl = rawUrl.replace(
+          "/upload/",
+          "/upload/f_auto,q_auto,w_600/"
+        );
       await axios.post(`${API_URL}/api/products/`, {
         title: name,
         price: parseFloat(price),
