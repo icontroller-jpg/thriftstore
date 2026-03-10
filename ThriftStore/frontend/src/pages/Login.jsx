@@ -276,7 +276,7 @@ function Login() {
           </button>
 
           <p className="li-footer-text">
-            No account yet? <a href="/signup">Create one</a>
+            No account yet? <a href="/#/signup">Create one</a>
           </p>
         </div>
       </div>
