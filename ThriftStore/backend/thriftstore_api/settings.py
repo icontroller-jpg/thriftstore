@@ -95,7 +95,7 @@ DEBUG = True
 
 SECRET_KEY = "your-secret-key"
 
-ALLOWED_HOSTS = ["thriftstore-backend.onrender.com",]
+ALLOWED_HOSTS = ["thriftstore-backend.onrender.com", "127.0.0.1"]
 
 
 CORS_ALLOW_ALL_ORIGINS = True
