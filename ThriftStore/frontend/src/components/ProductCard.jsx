@@ -1,22 +1,9 @@
 function ProductCard({ product }) {
-  const buy = async () => {
+  const buy = () => {
     const phone = "+263788448120";
-    const text = `Hello, I would like to enquire about *${product.title}* — $${product.price}`;
-
-    if (navigator.share) {
-      try {
-        const blob = await fetch(product.image).then(r => r.blob());
-        const file = new File([blob], "product.jpg", { type: blob.type });
-        await navigator.share({ text, files: [file] });
-        return;
-      } catch (e) {
-        // fall through to wa.me
-      }
-    }
-
-    // fallback
-    const msg = `${product.image}\n\n${text}`;
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`);
+    const msg = `Hello, I would like to enquire about *${product.title}* — $${product.price}\n\nProduct Image: ${product.image}`;
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+    window.open(url);
   };
 
   return (
