@@ -2,6 +2,10 @@ from django.contrib.auth.models import User
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+import resend
+import os
+
+resend.api_key = os.environ.get("RESEND_API_KEY")
 
 @api_view(["POST"])
 def signup(request):
@@ -16,5 +20,27 @@ def signup(request):
         email=email,
         password=password
     )
+
+    resend.Emails.send({
+        "from": "Pridepzw <onboarding@resend.dev>",
+        "to": email,
+        "subject": "Welcome to Pridepzw",
+        "html": f"""
+            <div style="font-family: Georgia, serif; max-width: 480px; margin: 0 auto; padding: 40px 24px; color: #0e0d0b;">
+                <h1 style="font-size: 32px; font-weight: 400; margin-bottom: 4px;">Welcome</h1>
+                <p style="font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(14,13,11,0.4); margin-bottom: 32px;">to Pridepzw</p>
+                <p style="font-size: 14px; line-height: 1.8; color: rgba(14,13,11,0.7);">
+                    Thank you for joining. You're now part of a curated community of conscious fashion lovers.
+                    New pieces drop weekly — we'll keep you in the loop.
+                </p>
+                <a href="https://thriftstore-t4od.onrender.com/#/" style="display: inline-block; margin-top: 32px; padding: 12px 28px; border: 1px solid #0e0d0b; font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: #0e0d0b; text-decoration: none;">
+                    Shop Now
+                </a>
+                <p style="margin-top: 48px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(14,13,11,0.3);">
+                    © 2026 Pridepzw — Slow fashion, conscious living
+                </p>
+            </div>
+        """
+    })
 
     return Response({"message": "User created successfully"})
