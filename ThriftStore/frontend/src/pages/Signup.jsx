@@ -274,7 +274,7 @@ function Signup() {
           </button>
 
           <p className="su-footer-text">
-            Already have an account? <a href="/login">Sign in</a>
+            Already have an account? <a href="#/login">Sign in</a>
           </p>
         </div>
       </div>
