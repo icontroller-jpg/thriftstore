@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -53,6 +54,18 @@ TEMPLATES = [
     },
 ]
 
+from datetime import timedelta
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
