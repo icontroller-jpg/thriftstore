@@ -32,6 +32,7 @@ function Login() {
 
         .li-root {
           min-height: 100vh;
+          min-height: 100dvh;
           background: var(--ivory, #f2ede4);
           display: flex;
           flex-direction: column;
@@ -104,9 +105,7 @@ function Login() {
           transition: color 0.2s;
         }
 
-        .li-field.active .li-label {
-          color: #0e0d0b;
-        }
+        .li-field.active .li-label { color: #0e0d0b; }
 
         .li-input {
           width: 100%;
@@ -123,13 +122,8 @@ function Login() {
           border-radius: 0;
         }
 
-        .li-input:focus {
-          border-bottom-color: #0e0d0b;
-        }
-
-        .li-input::placeholder {
-          color: transparent;
-        }
+        .li-input:focus { border-bottom-color: #0e0d0b; }
+        .li-input::placeholder { color: transparent; }
 
         .li-btn {
           width: 100%;
@@ -146,6 +140,8 @@ function Login() {
           transition: color 0.3s;
           position: relative;
           overflow: hidden;
+          -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
         }
 
         .li-btn::after {
@@ -160,17 +156,13 @@ function Login() {
 
         .li-btn:hover::after { transform: translateY(0); }
         .li-btn:hover { color: #f2ede4; }
+        .li-btn:active::after { transform: translateY(0); }
+        .li-btn:active { color: #f2ede4; }
 
-        .li-btn:disabled {
-          opacity: 0.4;
-          cursor: not-allowed;
-        }
+        .li-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .li-btn:disabled::after { display: none; }
 
-        .li-btn span {
-          position: relative;
-          z-index: 1;
-        }
+        .li-btn span { position: relative; z-index: 1; }
 
         .li-footer-text {
           margin-top: 20px;
@@ -195,8 +187,43 @@ function Login() {
           to   { opacity: 1; transform: translateY(0); }
         }
 
-        @media (max-width: 400px) {
+        /* ── Tablet ── */
+        @media (max-width: 768px) {
+          .li-root { padding: 32px 24px; }
+          .li-logo { margin-bottom: 36px; }
+          .li-heading { font-size: 32px; }
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 600px) {
+          .li-root {
+            padding: 28px 24px;
+            justify-content: flex-start;
+            padding-top: 60px;
+          }
+          .li-logo {
+            font-size: 12px;
+            letter-spacing: 0.25em;
+            margin-bottom: 40px;
+          }
+          .li-card { max-width: 100%; }
           .li-heading { font-size: 30px; }
+          .li-sub { font-size: 8.5px; letter-spacing: 0.22em; margin-bottom: 28px; }
+          .li-input { font-size: 16px; } /* prevents iOS zoom */
+          .li-btn {
+            margin-top: 28px;
+            padding: 16px;
+            font-size: 8.5px;
+            min-height: 52px;
+          }
+          .li-footer-text { font-size: 8.5px; margin-top: 24px; }
+        }
+
+        /* ── iPhone SE ── */
+        @media (max-width: 375px) {
+          .li-root { padding-top: 48px; padding-left: 20px; padding-right: 20px; }
+          .li-heading { font-size: 26px; }
+          .li-logo { font-size: 11px; }
         }
       `}</style>
 
@@ -217,6 +244,7 @@ function Login() {
               type="email"
               className="li-input"
               value={email}
+              autoComplete="email"
               onChange={(e) => setEmail(e.target.value)}
               onFocus={() => setFocused('email')}
               onBlur={() => setFocused(null)}
@@ -229,6 +257,7 @@ function Login() {
               type="password"
               className="li-input"
               value={password}
+              autoComplete="current-password"
               onChange={(e) => setPassword(e.target.value)}
               onFocus={() => setFocused('password')}
               onBlur={() => setFocused(null)}

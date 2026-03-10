@@ -31,6 +31,7 @@ function Signup() {
 
         .su-root {
           min-height: 100vh;
+          min-height: 100dvh;
           background: var(--ivory, #f2ede4);
           display: flex;
           flex-direction: column;
@@ -103,9 +104,7 @@ function Signup() {
           transition: color 0.2s;
         }
 
-        .su-field.active .su-label {
-          color: #0e0d0b;
-        }
+        .su-field.active .su-label { color: #0e0d0b; }
 
         .su-input {
           width: 100%;
@@ -122,13 +121,8 @@ function Signup() {
           border-radius: 0;
         }
 
-        .su-input:focus {
-          border-bottom-color: #0e0d0b;
-        }
-
-        .su-input::placeholder {
-          color: transparent;
-        }
+        .su-input:focus { border-bottom-color: #0e0d0b; }
+        .su-input::placeholder { color: transparent; }
 
         .su-btn {
           width: 100%;
@@ -145,6 +139,8 @@ function Signup() {
           transition: color 0.3s;
           position: relative;
           overflow: hidden;
+          -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
         }
 
         .su-btn::after {
@@ -159,17 +155,13 @@ function Signup() {
 
         .su-btn:hover::after { transform: translateY(0); }
         .su-btn:hover { color: #f2ede4; }
+        .su-btn:active::after { transform: translateY(0); }
+        .su-btn:active { color: #f2ede4; }
 
-        .su-btn:disabled {
-          opacity: 0.4;
-          cursor: not-allowed;
-        }
+        .su-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .su-btn:disabled::after { display: none; }
 
-        .su-btn span {
-          position: relative;
-          z-index: 1;
-        }
+        .su-btn span { position: relative; z-index: 1; }
 
         .su-footer-text {
           margin-top: 20px;
@@ -194,8 +186,43 @@ function Signup() {
           to   { opacity: 1; transform: translateY(0); }
         }
 
-        @media (max-width: 400px) {
+        /* ── Tablet ── */
+        @media (max-width: 768px) {
+          .su-root { padding: 32px 24px; }
+          .su-logo { margin-bottom: 36px; }
+          .su-heading { font-size: 32px; }
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 600px) {
+          .su-root {
+            padding: 28px 24px;
+            justify-content: flex-start;
+            padding-top: 60px;
+          }
+          .su-logo {
+            font-size: 12px;
+            letter-spacing: 0.25em;
+            margin-bottom: 40px;
+          }
+          .su-card { max-width: 100%; }
           .su-heading { font-size: 30px; }
+          .su-sub { font-size: 8.5px; letter-spacing: 0.22em; margin-bottom: 28px; }
+          .su-input { font-size: 16px; } /* prevents iOS zoom */
+          .su-btn {
+            margin-top: 28px;
+            padding: 16px;
+            font-size: 8.5px;
+            min-height: 52px;
+          }
+          .su-footer-text { font-size: 8.5px; margin-top: 24px; }
+        }
+
+        /* ── iPhone SE ── */
+        @media (max-width: 375px) {
+          .su-root { padding-top: 48px; padding-left: 20px; padding-right: 20px; }
+          .su-heading { font-size: 26px; }
+          .su-logo { font-size: 11px; }
         }
       `}</style>
 
@@ -216,6 +243,7 @@ function Signup() {
               type="email"
               className="su-input"
               value={email}
+              autoComplete="email"
               onChange={(e) => setEmail(e.target.value)}
               onFocus={() => setFocused('email')}
               onBlur={() => setFocused(null)}
@@ -228,6 +256,7 @@ function Signup() {
               type="password"
               className="su-input"
               value={password}
+              autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
               onFocus={() => setFocused('password')}
               onBlur={() => setFocused(null)}
