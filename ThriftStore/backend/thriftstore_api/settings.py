@@ -91,6 +91,12 @@ CORS_ALLOWED_ORIGINS = [
     "https://thriftstore-t4od.onrender.com",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://thriftstore-t4od.onrender.com",
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
 DEBUG = True
 
 SECRET_KEY = "your-secret-key"
@@ -98,7 +104,6 @@ SECRET_KEY = "your-secret-key"
 ALLOWED_HOSTS = ["thriftstore-backend.onrender.com", "127.0.0.1"]
 
 
-CORS_ALLOW_ALL_ORIGINS = True
 
 
 
