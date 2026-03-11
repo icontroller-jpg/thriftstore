@@ -17,6 +17,8 @@ INSTALLED_APPS = [
     # third party
     "rest_framework",
     "corsheaders",
+    "rest_framework.authtoken",
+
 
     # local apps
     "users",
@@ -102,8 +104,6 @@ DEBUG = True
 SECRET_KEY = "your-secret-key"
 
 ALLOWED_HOSTS = ["thriftstore-backend.onrender.com", "127.0.0.1"]
-
-
 
 
 
