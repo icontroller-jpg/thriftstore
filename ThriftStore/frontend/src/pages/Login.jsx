@@ -7,26 +7,36 @@ function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState(null);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-
 
   const handleLogin = async () => {
     if (!email || !password) return;
+
     setLoading(true);
+    setError("");
+
     try {
       const res = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/login/`,
-          {
-            username: email,
-            password: password
-          }
-        );
+        `${import.meta.env.VITE_API_URL}/api/login/`,
+        {
+          username: email,
+          password: password
+        }
+      );
+
       localStorage.setItem("access", res.data.access);
-    localStorage.setItem("refresh", res.data.refresh);
+      localStorage.setItem("refresh", res.data.refresh);
+
       navigate("/");
     } catch (err) {
       console.error(err);
-      alert("Login failed");
+
+      if (err.response && err.response.data) {
+        setError(err.response.data.detail || "Login failed");
+      } else {
+        setError("Network error. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
