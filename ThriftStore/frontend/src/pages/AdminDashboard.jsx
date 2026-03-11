@@ -45,32 +45,43 @@ function AdminDashboard() {
     if (!name || !price || !file) return alert("Please fill all required fields");
     setLoading(true);
     try {
+      // Step 1: Cloudinary upload
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", CLOUDINARY_PRESET);
-      const cloudinaryRes = await axios.post(CLOUDINARY_URL, formData);
-      const rawUrl = cloudinaryRes.data.secure_url;
 
-        const imageUrl = rawUrl.replace(
-          "/upload/",
-          "/upload/f_auto,q_auto,w_600/"
-        );
+      console.log("Uploading to Cloudinary...");
+      const cloudinaryRes = await axios.post(CLOUDINARY_URL, formData, {
+        timeout: 15000  // 15s timeout
+      });
+      console.log("Cloudinary done:", cloudinaryRes.data.secure_url);
+
+      const rawUrl = cloudinaryRes.data.secure_url;
+      const imageUrl = rawUrl.replace("/upload/", "/upload/f_auto,q_auto,w_600/");
+
+      // Step 2: Save to your API
+      console.log("Saving to API...");
       await axios.post(`${API_URL}/api/products/`, {
         title: name,
         price: parseFloat(price),
         description,
         image: imageUrl,
         condition: "new",
+      }, {
+        timeout: 10000  // 10s timeout
       });
+      console.log("API done!");
+
       alert("Product uploaded successfully!");
       setName(""); setPrice(""); setDescription(""); setFile(null); setPreview(null);
+
     } catch (err) {
-      console.error(err);
-      alert("Upload failed. Check console for details.");
+      console.error("Upload error:", err);
+      alert(`Upload failed: ${err.message}`);
     } finally {
-      setLoading(false);
+      setLoading(false);  // always runs now
     }
-  };
+};
 
   const deleteProduct = async (id) => {
     setDeletingId(id);
