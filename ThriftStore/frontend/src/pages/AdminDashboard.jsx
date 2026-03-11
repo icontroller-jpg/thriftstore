@@ -19,17 +19,21 @@ function AdminDashboard() {
   const CLOUDINARY_PRESET = import.meta.env.VITE_CLOUDINARY_PRESET || "thriftstore";
   const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL || "https://api.cloudinary.com/v1_1/dfapvjvza/image/upload";
 
-  const fetchProducts = async () => {
+
+    const fetchProducts = async () => {
     setProductsLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/api/products/`);
+      const res = await axios.get(`${API_URL}/api/products/`, {
+        timeout: 10000  // 10s timeout
+      });
       setProducts(res.data);
     } catch (err) {
-      console.error(err);
+      console.error("Fetch failed:", err.message);
+      setProducts([]);  // stop spinner
     } finally {
-      setProductsLoading(false);
+      setProductsLoading(false);  // always stop spinner
     }
-  };
+};
 
   useEffect(() => {
     if (activeTab === "inventory") fetchProducts();
