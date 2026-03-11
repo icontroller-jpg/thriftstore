@@ -15,10 +15,14 @@ function Login() {
     setLoading(true);
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/login/`,
-        { email, password }
-      );
-      localStorage.setItem("token", res.data.token);
+          `${import.meta.env.VITE_API_URL}/api/login/`,
+          {
+            username: email,
+            password: password
+          }
+        );
+      localStorage.setItem("access", res.data.access);
+    localStorage.setItem("refresh", res.data.refresh);
       navigate("/");
     } catch (err) {
       console.error(err);
