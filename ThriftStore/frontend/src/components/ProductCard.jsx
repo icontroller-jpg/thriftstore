@@ -1,3 +1,8 @@
+function optimizeImage(url, width = 600) {
+  if (!url || !url.includes("cloudinary.com")) return url;
+  return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width},c_fill/`);
+}
+
 function ProductCard({ product }) {
   const buy = () => {
     const phone = "+263788448120";
@@ -155,7 +160,14 @@ function ProductCard({ product }) {
 
       <div className="pc">
         <div className="pc-img-wrap">
-          <img src={product.image} alt={product.title} loading="lazy" />
+          <img
+            src={optimizeImage(product.image, 600)}
+            alt={product.title}
+            loading="lazy"
+            decoding="async"
+            width="600"
+            height="600"
+          />
           {product.soldOut && (
             <div className="pc-sold-overlay">
               <span className="pc-sold-label">Sold</span>
