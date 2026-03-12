@@ -1,26 +1,212 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
-function Signup() {
+const API = "https://r3bel.onrender.com";
+
+const styles = `
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600&display=swap');
+
+  .signup-root {
+    min-height: 100vh;
+    background: #020408;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Rajdhani', sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .signup-root::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(0,255,170,0.015) 60px, rgba(0,255,170,0.015) 61px),
+      repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(0,255,170,0.015) 60px, rgba(0,255,170,0.015) 61px);
+    pointer-events: none;
+  }
+
+  .signup-root::after {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 60% 40%, rgba(0,255,170,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .signup-card {
+    position: relative;
+    width: 380px;
+    padding: 48px 40px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .corner { position: absolute; width: 16px; height: 16px; border-color: rgba(0,255,170,0.5); border-style: solid; }
+  .corner-tl { top: 0; left: 0; border-width: 1px 0 0 1px; }
+  .corner-tr { top: 0; right: 0; border-width: 1px 1px 0 0; }
+  .corner-bl { bottom: 0; left: 0; border-width: 0 0 1px 1px; }
+  .corner-br { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+
+  .signup-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.3em; color: rgba(0,255,170,0.5); text-transform: uppercase; margin-bottom: 32px; }
+  .signup-title { font-size: 32px; font-weight: 600; letter-spacing: 0.15em; color: #e8f4f0; text-transform: uppercase; margin: 0 0 8px 0; line-height: 1; }
+  .signup-sub { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.25); letter-spacing: 0.1em; margin: 0 0 40px 0; }
+
+  .field-group { margin-bottom: 20px; position: relative; }
+  .field-label { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.25em; color: rgba(0,255,170,0.4); text-transform: uppercase; display: block; margin-bottom: 8px; }
+  .field-input { width: 100%; background: rgba(0,255,170,0.03); border: none; border-bottom: 1px solid rgba(0,255,170,0.2); color: #e8f4f0; font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 400; letter-spacing: 0.05em; padding: 10px 0; outline: none; transition: border-color 0.2s ease; box-sizing: border-box; }
+  .field-input::placeholder { color: rgba(255,255,255,0.1); }
+  .field-input:focus { border-bottom-color: rgba(0,255,170,0.7); }
+  .field-input:-webkit-autofill { -webkit-box-shadow: 0 0 0 1000px #020408 inset; -webkit-text-fill-color: #e8f4f0; }
+
+  .submit-btn { width: 100%; margin-top: 36px; padding: 14px; background: transparent; border: 1px solid rgba(0,255,170,0.4); color: rgba(0,255,170,0.9); font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; position: relative; overflow: hidden; }
+  .submit-btn::before { content: ''; position: absolute; inset: 0; background: rgba(0,255,170,0.06); transform: translateX(-100%); transition: transform 0.3s ease; }
+  .submit-btn:hover:not(:disabled)::before { transform: translateX(0); }
+  .submit-btn:hover:not(:disabled) { border-color: rgba(0,255,170,0.8); color: #00ffaa; box-shadow: 0 0 20px rgba(0,255,170,0.1); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.12);
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.07);
+  }
+
+  .google-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 13px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.45);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .google-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.03);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .google-btn:hover::before { transform: translateX(0); }
+  .google-btn:hover {
+    border-color: rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.75);
+  }
+  .google-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .error-msg { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: rgba(255,80,80,0.8); margin-top: 16px; padding: 10px 12px; border-left: 2px solid rgba(255,80,80,0.4); background: rgba(255,80,80,0.04); }
+
+  .signin-link { margin-top: 28px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.2); letter-spacing: 0.05em; }
+  .signin-link a { color: rgba(0,255,170,0.5); text-decoration: none; transition: color 0.2s; }
+  .signin-link a:hover { color: rgba(0,255,170,0.9); }
+`;
+
+declare global {
+  interface Window {
+    google?: any;
+  }
+}
+
+export default function Signup() {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [focused, setFocused] = useState(null);
-  const navigate = useNavigate();
+  const [googleLoading, setGoogleLoading] = useState(false);
 
-  const handleSignup = async () => {
-    if (!email || !password) return;
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.onload = () => {
+      window.google?.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+      });
+    };
+    document.body.appendChild(script);
+    return () => { document.body.removeChild(script); };
+  }, []);
+
+  const handleGoogleResponse = async (response: { credential: string }) => {
+    setGoogleLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`${API}/api/auth/google/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: response.credential }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.detail || data.error || "Google login failed");
+        return;
+      }
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
+      navigate("/");
+    } catch {
+      setError("Google login failed. Try again.");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  const triggerGoogle = () => {
+    window.google?.accounts.id.prompt();
+  };
+
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
     setLoading(true);
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/signup/`,
-        { email, password }
-      );
-      navigate("/#");
-    } catch (err) {
-      console.error(err);
-      alert("Signup failed");
+      const response = await fetch(`${API}/api/signup/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.error || "Signup failed");
+        return;
+      }
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
+      navigate("/");
+    } catch {
+      setError("Unable to connect to server.");
     } finally {
       setLoading(false);
     }
@@ -28,258 +214,84 @@ function Signup() {
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Didact+Gothic&display=swap');
+      <style>{styles}</style>
+      <div className="signup-root">
+        <div className="signup-card">
+          <div className="corner corner-tl" />
+          <div className="corner corner-tr" />
+          <div className="corner corner-bl" />
+          <div className="corner corner-br" />
 
-        .su-root {
-          min-height: 100vh;
-          min-height: 100dvh;
-          background: var(--ivory, #f2ede4);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 40px 20px;
-          font-family: 'Didact Gothic', sans-serif;
-        }
+          <div className="signup-label">// init sequence</div>
+          <h1 className="signup-title">Rebel</h1>
+          <p className="signup-sub">Create your access credentials</p>
 
-        .su-logo {
-          font-family: 'IM Fell English', serif;
-          font-size: 13px;
-          letter-spacing: 0.3em;
-          text-transform: uppercase;
-          color: #0e0d0b;
-          margin-bottom: 48px;
-          opacity: 0;
-          animation: riseUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards 0.1s;
-        }
+          <form onSubmit={handleSignup}>
+            <div className="field-group">
+              <label className="field-label">Username</label>
+              <input
+                className="field-input"
+                type="text"
+                placeholder="your_handle"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
 
-        .su-card {
-          width: 100%;
-          max-width: 360px;
-          opacity: 0;
-          animation: riseUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards 0.2s;
-        }
+            <div className="field-group">
+              <label className="field-label">Email Address</label>
+              <input
+                className="field-input"
+                type="email"
+                placeholder="user@domain.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
-        .su-heading {
-          font-family: 'IM Fell English', serif;
-          font-size: 36px;
-          font-weight: 400;
-          line-height: 1;
-          color: #0e0d0b;
-          margin-bottom: 4px;
-        }
+            <div className="field-group">
+              <label className="field-label">Password</label>
+              <input
+                className="field-input"
+                type="password"
+                placeholder="min. 8 characters"
+                value={password}
+                minLength={8}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
 
-        .su-heading-italic {
-          font-style: italic;
-          color: rgba(14,13,11,0.4);
-        }
+            <button className="submit-btn" type="submit" disabled={loading}>
+              {loading ? "Initializing..." : "Create Account"}
+            </button>
+          </form>
 
-        .su-sub {
-          font-size: 9px;
-          letter-spacing: 0.28em;
-          text-transform: uppercase;
-          color: rgba(14,13,11,0.4);
-          margin-bottom: 36px;
-          margin-top: 10px;
-        }
-
-        .su-divider {
-          width: 100%;
-          height: 1px;
-          background: rgba(14,13,11,0.1);
-          margin-bottom: 28px;
-        }
-
-        .su-field {
-          margin-bottom: 20px;
-          position: relative;
-        }
-
-        .su-label {
-          display: block;
-          font-size: 8.5px;
-          letter-spacing: 0.28em;
-          text-transform: uppercase;
-          color: rgba(14,13,11,0.35);
-          margin-bottom: 8px;
-          transition: color 0.2s;
-        }
-
-        .su-field.active .su-label { color: #0e0d0b; }
-
-        .su-input {
-          width: 100%;
-          background: transparent;
-          border: none;
-          border-bottom: 1px solid rgba(14,13,11,0.15);
-          color: #0e0d0b;
-          font-family: 'Didact Gothic', sans-serif;
-          font-size: 13px;
-          padding: 8px 0;
-          outline: none;
-          transition: border-color 0.2s;
-          -webkit-appearance: none;
-          border-radius: 0;
-        }
-
-        .su-input:focus { border-bottom-color: #0e0d0b; }
-        .su-input::placeholder { color: transparent; }
-
-        .su-btn {
-          width: 100%;
-          margin-top: 32px;
-          padding: 14px;
-          background: transparent;
-          border: 1px solid #0e0d0b;
-          color: #0e0d0b;
-          font-family: 'Didact Gothic', sans-serif;
-          font-size: 9px;
-          letter-spacing: 0.3em;
-          text-transform: uppercase;
-          cursor: pointer;
-          transition: color 0.3s;
-          position: relative;
-          overflow: hidden;
-          -webkit-tap-highlight-color: transparent;
-          touch-action: manipulation;
-        }
-
-        .su-btn::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: #0e0d0b;
-          transform: translateY(100%);
-          transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
-          z-index: 0;
-        }
-
-        .su-btn:hover::after { transform: translateY(0); }
-        .su-btn:hover { color: #f2ede4; }
-        .su-btn:active::after { transform: translateY(0); }
-        .su-btn:active { color: #f2ede4; }
-
-        .su-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .su-btn:disabled::after { display: none; }
-
-        .su-btn span { position: relative; z-index: 1; }
-
-        .su-footer-text {
-          margin-top: 20px;
-          font-size: 9px;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          color: rgba(14,13,11,0.35);
-          text-align: center;
-        }
-
-        .su-footer-text a {
-          color: #0e0d0b;
-          text-decoration: none;
-          border-bottom: 1px solid rgba(14,13,11,0.2);
-          padding-bottom: 1px;
-          transition: border-color 0.2s;
-        }
-        .su-footer-text a:hover { border-color: #0e0d0b; }
-
-        @keyframes riseUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ── Tablet ── */
-        @media (max-width: 768px) {
-          .su-root { padding: 32px 24px; }
-          .su-logo { margin-bottom: 36px; }
-          .su-heading { font-size: 32px; }
-        }
-
-        /* ── Mobile ── */
-        @media (max-width: 600px) {
-          .su-root {
-            padding: 28px 24px;
-            justify-content: flex-start;
-            padding-top: 60px;
-          }
-          .su-logo {
-            font-size: 12px;
-            letter-spacing: 0.25em;
-            margin-bottom: 40px;
-          }
-          .su-card { max-width: 100%; }
-          .su-heading { font-size: 30px; }
-          .su-sub { font-size: 8.5px; letter-spacing: 0.22em; margin-bottom: 28px; }
-          .su-input { font-size: 16px; } /* prevents iOS zoom */
-          .su-btn {
-            margin-top: 28px;
-            padding: 16px;
-            font-size: 8.5px;
-            min-height: 52px;
-          }
-          .su-footer-text { font-size: 8.5px; margin-top: 24px; }
-        }
-
-        /* ── iPhone SE ── */
-        @media (max-width: 375px) {
-          .su-root { padding-top: 48px; padding-left: 20px; padding-right: 20px; }
-          .su-heading { font-size: 26px; }
-          .su-logo { font-size: 11px; }
-        }
-      `}</style>
-
-      <div className="su-root">
-        <span className="su-logo">Pridepzw</span>
-
-        <div className="su-card">
-          <h1 className="su-heading">
-            Create<br />
-            <span className="su-heading-italic">an account</span>
-          </h1>
-          <p className="su-sub">Join the community</p>
-          <div className="su-divider" />
-
-          <div className={`su-field ${focused === 'email' ? 'active' : ''}`}>
-            <label className="su-label">Email Address</label>
-            <input
-              type="email"
-              className="su-input"
-              value={email}
-              autoComplete="email"
-              onChange={(e) => setEmail(e.target.value)}
-              onFocus={() => setFocused('email')}
-              onBlur={() => setFocused(null)}
-            />
-          </div>
-
-          <div className={`su-field ${focused === 'password' ? 'active' : ''}`}>
-            <label className="su-label">Password</label>
-            <input
-              type="password"
-              className="su-input"
-              value={password}
-              autoComplete="new-password"
-              onChange={(e) => setPassword(e.target.value)}
-              onFocus={() => setFocused('password')}
-              onBlur={() => setFocused(null)}
-            />
-          </div>
+          <div className="divider">or</div>
 
           <button
-            className="su-btn"
-            onClick={handleSignup}
-            disabled={loading || !email || !password}
+            className="google-btn"
+            type="button"
+            onClick={triggerGoogle}
+            disabled={googleLoading}
           >
-            <span>{loading ? "Creating..." : "Create Account"}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            {googleLoading ? "Authenticating..." : "Continue with Google"}
           </button>
 
-          <p className="su-footer-text">
-            Already have an account? <a href="/#/login">Sign in</a>
-          </p>
+          {error && <div className="error-msg">{error}</div>}
+
+          <div className="signin-link">
+            Already have access? <a href="#/login">Sign in</a>
+          </div>
         </div>
       </div>
     </>
   );
 }
-
-export default Signup;
