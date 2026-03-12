@@ -1,195 +1,297 @@
-function optimizeImage(url, width = 600) {
-  if (!url || !url.includes("cloudinary.com")) return url;
-  return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width},c_fill/`);
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+const API = "https://r3bel.onrender.com";
+
+const styles = `
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600&display=swap');
+
+  .signup-root {
+    min-height: 100vh;
+    background: #020408;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Rajdhani', sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .signup-root::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(0,255,170,0.015) 60px, rgba(0,255,170,0.015) 61px),
+      repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(0,255,170,0.015) 60px, rgba(0,255,170,0.015) 61px);
+    pointer-events: none;
+  }
+
+  .signup-root::after {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 60% 40%, rgba(0,255,170,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .signup-card {
+    position: relative;
+    width: 380px;
+    padding: 48px 40px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .corner { position: absolute; width: 16px; height: 16px; border-color: rgba(0,255,170,0.5); border-style: solid; }
+  .corner-tl { top: 0; left: 0; border-width: 1px 0 0 1px; }
+  .corner-tr { top: 0; right: 0; border-width: 1px 1px 0 0; }
+  .corner-bl { bottom: 0; left: 0; border-width: 0 0 1px 1px; }
+  .corner-br { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+
+  .signup-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.3em; color: rgba(0,255,170,0.5); text-transform: uppercase; margin-bottom: 32px; }
+  .signup-title { font-size: 32px; font-weight: 600; letter-spacing: 0.15em; color: #e8f4f0; text-transform: uppercase; margin: 0 0 8px 0; line-height: 1; }
+  .signup-sub { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.25); letter-spacing: 0.1em; margin: 0 0 40px 0; }
+
+  .field-group { margin-bottom: 20px; position: relative; }
+  .field-label { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.25em; color: rgba(0,255,170,0.4); text-transform: uppercase; display: block; margin-bottom: 8px; }
+  .field-input { width: 100%; background: rgba(0,255,170,0.03); border: none; border-bottom: 1px solid rgba(0,255,170,0.2); color: #e8f4f0; font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 400; letter-spacing: 0.05em; padding: 10px 0; outline: none; transition: border-color 0.2s ease; box-sizing: border-box; }
+  .field-input::placeholder { color: rgba(255,255,255,0.1); }
+  .field-input:focus { border-bottom-color: rgba(0,255,170,0.7); }
+  .field-input:-webkit-autofill { -webkit-box-shadow: 0 0 0 1000px #020408 inset; -webkit-text-fill-color: #e8f4f0; }
+
+  .submit-btn { width: 100%; margin-top: 36px; padding: 14px; background: transparent; border: 1px solid rgba(0,255,170,0.4); color: rgba(0,255,170,0.9); font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; position: relative; overflow: hidden; }
+  .submit-btn::before { content: ''; position: absolute; inset: 0; background: rgba(0,255,170,0.06); transform: translateX(-100%); transition: transform 0.3s ease; }
+  .submit-btn:hover:not(:disabled)::before { transform: translateX(0); }
+  .submit-btn:hover:not(:disabled) { border-color: rgba(0,255,170,0.8); color: #00ffaa; box-shadow: 0 0 20px rgba(0,255,170,0.1); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.12);
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.07);
+  }
+
+  .google-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 13px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.45);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .google-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.03);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .google-btn:hover::before { transform: translateX(0); }
+  .google-btn:hover {
+    border-color: rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.75);
+  }
+  .google-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .error-msg { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: rgba(255,80,80,0.8); margin-top: 16px; padding: 10px 12px; border-left: 2px solid rgba(255,80,80,0.4); background: rgba(255,80,80,0.04); }
+
+  .signin-link { margin-top: 28px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.2); letter-spacing: 0.05em; }
+  .signin-link a { color: rgba(0,255,170,0.5); text-decoration: none; transition: color 0.2s; }
+  .signin-link a:hover { color: rgba(0,255,170,0.9); }
+`;
+
+declare global {
+  interface Window {
+    google?: any;
+  }
 }
 
-function ProductCard({ product }) {
-  const buy = () => {
-    const phone = "+263788448120";
-    const msg = `Hello, I would like to enquire about *${product.title}* — $${product.price}\n\nProduct Image: ${product.image}`;
-    const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-    window.open(url);
+export default function Signup() {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.onload = () => {
+      window.google?.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+      });
+    };
+    document.body.appendChild(script);
+    return () => { document.body.removeChild(script); };
+  }, []);
+
+  const handleGoogleResponse = async (response: { credential: string }) => {
+    setGoogleLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`${API}/api/auth/google/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: response.credential }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.detail || data.error || "Google login failed");
+        return;
+      }
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
+      navigate("/");
+    } catch {
+      setError("Google login failed. Try again.");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  const triggerGoogle = () => {
+    window.google?.accounts.id.prompt();
+  };
+
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const response = await fetch(`${API}/api/signup/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.error || "Signup failed");
+        return;
+      }
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
+      navigate("/");
+    } catch {
+      setError("Unable to connect to server.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
-      <style>{`
-        .pc {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-          background: var(--ivory, #f2ede4);
-          position: relative;
-          -webkit-tap-highlight-color: transparent;
-        }
+      <style>{styles}</style>
+      <div className="signup-root">
+        <div className="signup-card">
+          <div className="corner corner-tl" />
+          <div className="corner corner-tr" />
+          <div className="corner corner-bl" />
+          <div className="corner corner-br" />
 
-        .pc-img-wrap {
-          position: relative;
-          width: 100%;
-          aspect-ratio: 1 / 1;
-          overflow: hidden;
-          background: #ece7de;
-          flex-shrink: 0;
-        }
+          <div className="signup-label">// init sequence</div>
+          <h1 className="signup-title">Rebel</h1>
+          <p className="signup-sub">Create your access credentials</p>
 
-        .pc-img-wrap img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: center;
-          display: block;
-          transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        @media (hover: hover) {
-          .pc:hover .pc-img-wrap img { transform: scale(1.04); }
-        }
-
-        .pc-sold-overlay {
-          position: absolute;
-          inset: 0;
-          background: rgba(242,237,228,0.65);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .pc-sold-label {
-          font-family: 'Didact Gothic', sans-serif;
-          font-size: 9px;
-          letter-spacing: 0.35em;
-          text-transform: uppercase;
-          color: #0e0d0b;
-          border: 1px solid #0e0d0b;
-          padding: 6px 14px;
-        }
-
-        .pc-info {
-          padding: 12px 14px 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .pc-title {
-          font-family: 'IM Fell English', serif;
-          font-size: 14px;
-          font-weight: 400;
-          color: #0e0d0b;
-          line-height: 1.3;
-          margin-bottom: 4px;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        .pc-price {
-          font-family: 'Didact Gothic', sans-serif;
-          font-size: 10px;
-          letter-spacing: 0.16em;
-          color: rgba(14,13,11,0.5);
-        }
-
-        .pc-spacer { flex: 1; min-height: 10px; }
-
-        .pc-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 7px;
-          width: 100%;
-          min-height: 44px;
-          padding: 12px 14px;
-          margin-top: 10px;
-          background: transparent;
-          border: none;
-          border-top: 1px solid rgba(14,13,11,0.1);
-          cursor: pointer;
-          font-family: 'Didact Gothic', sans-serif;
-          font-size: 8.5px;
-          letter-spacing: 0.24em;
-          text-transform: uppercase;
-          color: rgba(14,13,11,0.5);
-          position: relative;
-          overflow: hidden;
-          -webkit-tap-highlight-color: transparent;
-          -webkit-text-size-adjust: 100%;
-        }
-
-        .pc-btn::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: #0e0d0b;
-          transform: translateY(100%);
-          transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
-          z-index: 0;
-        }
-
-        @media (hover: hover) {
-          .pc-btn:hover::after { transform: translateY(0); }
-          .pc-btn:hover { color: #f2ede4; }
-        }
-
-        .pc-btn:active::after { transform: translateY(0); }
-        .pc-btn:active { color: #f2ede4; }
-
-        .pc-btn span,
-        .pc-btn svg { position: relative; z-index: 1; }
-
-        .pc-wa-icon { width: 10px; height: 10px; flex-shrink: 0; }
-
-        @media (max-width: 600px) {
-          .pc-info  { padding: 10px 10px 0; }
-          .pc-title { font-size: 12px; }
-          .pc-price { font-size: 9px; }
-          .pc-btn   {
-            font-size: 8px;
-            letter-spacing: 0.18em;
-            padding: 10px;
-            min-height: 40px;
-          }
-          .pc-wa-icon { width: 9px; height: 9px; }
-        }
-
-        @media (max-width: 375px) {
-          .pc-title { font-size: 11px; }
-          .pc-btn   { font-size: 7.5px; letter-spacing: 0.14em; }
-        }
-      `}</style>
-
-      <div className="pc">
-        <div className="pc-img-wrap">
-          <img
-            src={optimizeImage(product.image, 600)}
-            alt={product.title}
-            loading="lazy"
-            decoding="async"
-            width="600"
-            height="600"
-          />
-          {product.soldOut && (
-            <div className="pc-sold-overlay">
-              <span className="pc-sold-label">Sold</span>
+          <form onSubmit={handleSignup}>
+            <div className="field-group">
+              <label className="field-label">Username</label>
+              <input
+                className="field-input"
+                type="text"
+                placeholder="your_handle"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
             </div>
-          )}
-        </div>
 
-        <div className="pc-info">
-          <h3 className="pc-title">{product.title}</h3>
-          <p className="pc-price">${product.price}</p>
-          <div className="pc-spacer" />
-        </div>
+            <div className="field-group">
+              <label className="field-label">Email Address</label>
+              <input
+                className="field-input"
+                type="email"
+                placeholder="user@domain.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
-        <button className="pc-btn" onClick={buy} aria-label={`Enquire about ${product.title}`}>
-          <svg className="pc-wa-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-          </svg>
-          <span>Enquire on WhatsApp</span>
-        </button>
+            <div className="field-group">
+              <label className="field-label">Password</label>
+              <input
+                className="field-input"
+                type="password"
+                placeholder="min. 8 characters"
+                value={password}
+                minLength={8}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button className="submit-btn" type="submit" disabled={loading}>
+              {loading ? "Initializing..." : "Create Account"}
+            </button>
+          </form>
+
+          <div className="divider">or</div>
+
+          <button
+            className="google-btn"
+            type="button"
+            onClick={triggerGoogle}
+            disabled={googleLoading}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            {googleLoading ? "Authenticating..." : "Continue with Google"}
+          </button>
+
+          {error && <div className="error-msg">{error}</div>}
+
+          <div className="signin-link">
+            Already have access? <a href="#/login">Sign in</a>
+          </div>
+        </div>
       </div>
     </>
   );
 }
-
-export default ProductCard;
