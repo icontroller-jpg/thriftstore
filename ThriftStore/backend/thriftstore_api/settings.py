@@ -97,6 +97,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://thriftstore-t4od.onrender.com",
 ]
 
+
 CORS_ALLOW_ALL_ORIGINS = True
 
 DEBUG = True
