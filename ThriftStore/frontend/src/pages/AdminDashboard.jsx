@@ -51,10 +51,9 @@ const IMAGEKIT_PRIVATE_KEY = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
   try {
     // Step 1: ImageKit upload
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("fileName", file.name);
-    formData.append("publicKey", IMAGEKIT_PUBLIC_KEY);
-
+        formData.append("file", file);
+        formData.append("fileName", file.name);
+        formData.append("publicKey", IMAGEKIT_PUBLIC_KEY);
     // Get auth signature from ImageKit
     const authRes = await axios.get(
       `https://upload.imagekit.io/api/v1/files/upload`,
@@ -62,16 +61,16 @@ const IMAGEKIT_PRIVATE_KEY = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
     );
 
     const imagekitRes = await axios.post(
-      "https://upload.imagekit.io/api/v1/files/upload",
-      formData,
-      {
-        auth: {
-          username: IMAGEKIT_PRIVATE_KEY,
-          password: "",
-        },
-        timeout: 15000,
-      }
-    );
+  "https://upload.imagekit.io/api/v1/files/upload",
+  formData,
+  {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "Authorization": `Basic ${btoa(IMAGEKIT_PUBLIC_KEY + ":")}`
+    },
+    timeout: 15000,
+  }
+);
 
     const imageUrl = imagekitRes.data.url;
     console.log("ImageKit done:", imageUrl);
