@@ -55,6 +55,7 @@ const IMAGEKIT_PRIVATE_KEY = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
     });
 
     const { token, expire, signature } = authRes.data;  // ← must be here
+    console.log("Auth response:", authRes.data);
 
     // Step 2: Upload to ImageKit
     const formData = new FormData();
