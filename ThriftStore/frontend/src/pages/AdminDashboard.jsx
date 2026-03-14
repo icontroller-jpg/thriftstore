@@ -49,33 +49,28 @@ const IMAGEKIT_PRIVATE_KEY = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
   if (!name || !price || !file) return alert("Please fill all required fields");
   setLoading(true);
   try {
-    // Step 1: ImageKit upload
+    // Step 1: Get auth params from Django
+    const authRes = await axios.get(`${API_URL}/api/imagekit-auth/`);
+    const { token, expire, signature } = authRes.data;
+
+    // Step 2: Upload to ImageKit
     const formData = new FormData();
-        formData.append("file", file);
-        formData.append("fileName", file.name);
-        formData.append("publicKey", IMAGEKIT_PUBLIC_KEY);
-    // Get auth signature from ImageKit
-    const authRes = await axios.get(
-      `https://upload.imagekit.io/api/v1/files/upload`,
-      { auth: { username: IMAGEKIT_PRIVATE_KEY, password: "" } }
-    );
+    formData.append("file", file);
+    formData.append("fileName", file.name);
+    formData.append("publicKey", IMAGEKIT_PUBLIC_KEY);
+    formData.append("token", token);
+    formData.append("expire", expire);
+    formData.append("signature", signature);
 
     const imagekitRes = await axios.post(
-  "https://upload.imagekit.io/api/v1/files/upload",
-  formData,
-  {
-    headers: {
-      "Content-Type": "multipart/form-data",
-      "Authorization": `Basic ${btoa(IMAGEKIT_PUBLIC_KEY + ":")}`
-    },
-    timeout: 15000,
-  }
-);
+      "https://upload.imagekit.io/api/v1/files/upload",
+      formData,
+      { timeout: 15000 }
+    );
 
     const imageUrl = imagekitRes.data.url;
-    console.log("ImageKit done:", imageUrl);
 
-    // Step 2: Save to your API
+    // Step 3: Save to your API
     await axios.post(`${API_URL}/api/products/`, {
       title: name,
       price: parseFloat(price),

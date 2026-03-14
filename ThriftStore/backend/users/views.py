@@ -66,7 +66,6 @@ def signup(request):
 
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
@@ -89,3 +88,19 @@ def login(request):
         "token": token.key,
         "email": user.email
     })
+
+from imagekitio import ImageKit
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+import os
+
+imagekit = ImageKit(
+    private_key=os.environ.get("IMAGEKIT_PRIVATE_KEY"),
+    public_key=os.environ.get("IMAGEKIT_PUBLIC_KEY"),
+    url_endpoint=os.environ.get("IMAGEKIT_URL_ENDPOINT")
+)
+
+@api_view(["GET"])
+def imagekit_auth(request):
+    auth_params = imagekit.get_authentication_parameters()
+    return Response(auth_params)
