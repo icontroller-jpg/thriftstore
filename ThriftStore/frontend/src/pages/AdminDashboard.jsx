@@ -16,9 +16,9 @@ function AdminDashboard() {
   const [confirmDelete, setConfirmDelete] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-  const CLOUDINARY_PRESET = import.meta.env.VITE_CLOUDINARY_PRESET || "thriftstore";
-  const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL || "https://api.cloudinary.com/v1_1/dfapvjvza/image/upload";
-
+const IMAGEKIT_URL_ENDPOINT = import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT;
+const IMAGEKIT_PUBLIC_KEY = import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY;
+const IMAGEKIT_PRIVATE_KEY = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
 
     const fetchProducts = async () => {
     setProductsLoading(true);
@@ -46,61 +46,55 @@ function AdminDashboard() {
   };
 
   const uploadProduct = async () => {
-    if (!name || !price || !file) return alert("Please fill all required fields");
-    setLoading(true);
-    try {
-      // Step 1: Cloudinary upload
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", CLOUDINARY_PRESET);
+  if (!name || !price || !file) return alert("Please fill all required fields");
+  setLoading(true);
+  try {
+    // Step 1: ImageKit upload
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("fileName", file.name);
+    formData.append("publicKey", IMAGEKIT_PUBLIC_KEY);
 
-      console.log("Uploading to Cloudinary...");
-      const cloudinaryRes = await axios.post(CLOUDINARY_URL, formData, {
-        timeout: 15000  // 15s timeout
-      });
-      console.log("Cloudinary done:", cloudinaryRes.data.secure_url);
+    // Get auth signature from ImageKit
+    const authRes = await axios.get(
+      `https://upload.imagekit.io/api/v1/files/upload`,
+      { auth: { username: IMAGEKIT_PRIVATE_KEY, password: "" } }
+    );
 
-      const rawUrl = cloudinaryRes.data.secure_url;
-      const imageUrl = rawUrl.replace("/upload/", "/upload/f_auto,q_auto,w_600/");
+    const imagekitRes = await axios.post(
+      "https://upload.imagekit.io/api/v1/files/upload",
+      formData,
+      {
+        auth: {
+          username: IMAGEKIT_PRIVATE_KEY,
+          password: "",
+        },
+        timeout: 15000,
+      }
+    );
 
-      // Step 2: Save to your API
-      console.log("Saving to API...");
-      await axios.post(`${API_URL}/api/products/`, {
-        title: name,
-        price: parseFloat(price),
-        description,
-        image: imageUrl,
-        condition: "new",
-      }, {
-        timeout: 10000  // 10s timeout
-      });
-      console.log("API done!");
+    const imageUrl = imagekitRes.data.url;
+    console.log("ImageKit done:", imageUrl);
 
-      alert("Product uploaded successfully!");
-      setName(""); setPrice(""); setDescription(""); setFile(null); setPreview(null);
+    // Step 2: Save to your API
+    await axios.post(`${API_URL}/api/products/`, {
+      title: name,
+      price: parseFloat(price),
+      description,
+      image: imageUrl,
+      condition: "new",
+    }, { timeout: 10000 });
 
-    } catch (err) {
-      console.error("Upload error:", err);
-      alert(`Upload failed: ${err.message}`);
-    } finally {
-      setLoading(false);  // always runs now
-    }
+    alert("Product uploaded successfully!");
+    setName(""); setPrice(""); setDescription(""); setFile(null); setPreview(null);
+
+  } catch (err) {
+    console.error("Upload error:", err);
+    alert(`Upload failed: ${err.message}`);
+  } finally {
+    setLoading(false);
+  }
 };
-
-  const deleteProduct = async (id) => {
-    setDeletingId(id);
-    try {
-      await axios.delete(`${API_URL}/api/products/${id}/`);
-      setProducts((prev) => prev.filter((p) => p.id !== id));
-    } catch (err) {
-      console.error(err);
-      alert("Delete failed.");
-    } finally {
-      setDeletingId(null);
-      setConfirmDelete(null);
-    }
-  };
-
   return (
     <>
       <style>{`
