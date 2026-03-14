@@ -50,10 +50,11 @@ const IMAGEKIT_PRIVATE_KEY = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
   setLoading(true);
   try {
     // Step 1: Get auth params from Django
-
     const authRes = await axios.get(`${API_URL}/api/imagekit-auth/`, {
-      timeout: 60000  // 60 seconds instead of default
+      timeout: 60000
     });
+
+    const { token, expire, signature } = authRes.data;  // ← must be here
 
     // Step 2: Upload to ImageKit
     const formData = new FormData();
@@ -67,19 +68,19 @@ const IMAGEKIT_PRIVATE_KEY = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
     const imagekitRes = await axios.post(
       "https://upload.imagekit.io/api/v1/files/upload",
       formData,
-      { timeout: 15000 }
+      { timeout: 60000 }
     );
 
     const imageUrl = imagekitRes.data.url;
 
-    // Step 3: Save to your API
+    // Step 3: Save to Django
     await axios.post(`${API_URL}/api/products/`, {
       title: name,
       price: parseFloat(price),
       description,
       image: imageUrl,
       condition: "new",
-    }, { timeout: 10000 });
+    }, { timeout: 60000 });
 
     alert("Product uploaded successfully!");
     setName(""); setPrice(""); setDescription(""); setFile(null); setPreview(null);
