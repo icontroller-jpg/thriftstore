@@ -50,8 +50,10 @@ const IMAGEKIT_PRIVATE_KEY = import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY;
   setLoading(true);
   try {
     // Step 1: Get auth params from Django
-    const authRes = await axios.get(`${API_URL}/api/imagekit-auth/`);
-    const { token, expire, signature } = authRes.data;
+
+    const authRes = await axios.get(`${API_URL}/api/imagekit-auth/`, {
+      timeout: 60000  // 60 seconds instead of default
+    });
 
     // Step 2: Upload to ImageKit
     const formData = new FormData();
